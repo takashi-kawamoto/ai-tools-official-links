@@ -303,7 +303,7 @@ stateDiagram-v2
 
 マージ前の確認項目は、[Git ブランチ運用ルール](./branch-rules.md) の「9. マージ」の「マージ前の確認」に従います。
 
-マージ方法は、[Git ブランチ運用ルール](./branch-rules.md) の「9. マージ」に従います（原則 **Squash and merge**）。
+マージ方法は、[Git ブランチ運用ルール](./branch-rules.md) の「9. マージ」に従います（**Merge pull request（Create a merge commit）**）。
 
 マージ後の作業ブランチは削除します。詳細は [Git ブランチ運用ルール](./branch-rules.md) の「10. マージ後のブランチ削除」を参照してください。
 
