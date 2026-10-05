@@ -2,7 +2,7 @@
 name: 機能追加・変更
 about: 機能の追加・変更を行う
 title: ""
-labels: ""
+labels: "feature"
 assignees: ""
 ---
 
@@ -20,4 +20,4 @@ assignees: ""
 
 ## 補足
 
-<!-- 関連Issue、設計書、参考情報など。不要な場合は削除 -->
+<!-- 関連 Issue、設計書、参考情報など。不要な場合は削除 -->
