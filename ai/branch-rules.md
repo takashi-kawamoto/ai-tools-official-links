@@ -188,7 +188,7 @@ flowchart TD
     D -->|問題あり| E[人間: 修正を依頼]
     E --> F[AI: 修正して再度 Push]
     F --> C
-    D -->|問題なし| G[人間: Squash and merge を実行]
+    D -->|問題なし| G[人間: Merge pull request を実行]
     G --> H[main に反映]
 ```
 
@@ -216,7 +216,7 @@ flowchart TD
 | 3 | Issue 要件の確認 | Issue の「完了条件」を満たしているか確認する |
 | 4 | 修正依頼 | 問題があれば PR にコメントし、AI エージェントに修正を依頼する |
 | 5 | マージ可否の判断 | 問題がなければ PR を承認（Approve）する。承認は PR 作成者以外のメンバーが行う |
-| 6 | マージの実行 | PR 画面下部のボタンで「Squash and merge」を選び、実行する |
+| 6 | マージの実行 | PR 画面下部のボタンが「Merge pull request」になっていることを確認し、押して「Confirm merge」で実行する（ボタン横の ▼ で「Create a merge commit」を選択） |
 
 **判断に迷う場合はマージせず、他のメンバーに相談してください。**
 
@@ -248,7 +248,7 @@ AI エージェントからこれらの操作を求められた場合や、実�
 | マージ | 作業ブランチの変更を `main` に取り込むこと |
 | CI | Push や PR 作成時に GitHub 上で自動実行されるチェック |
 | Lint | コードや文章の書き方を自動でチェックすること |
-| Squash and merge | PR 内の複数コミットを1つにまとめて `main` に取り込むマージ方法 |
+| Merge pull request（Create a merge commit） | PR 内のコミットをそのまま残し、「Merge pull request #番号」というマージコミットを作って `main` に取り込むマージ方法 |
 
 ### マージ前の確認
 
@@ -263,24 +263,26 @@ AI エージェントからこれらの操作を求められた場合や、実�
 
 ### マージ方法
 
-原則として **Squash and merge** を使用します。
+**Merge pull request（Create a merge commit）** を使用します。「Squash and merge」「Rebase and merge」は使用しません。
 
-- 1 Pull Request が `main` 上で1コミットになり、履歴を追いやすくするため
-- コミットメッセージは Pull Request のタイトルを基本とする
-- Pull Request 内では複数の作業コミットを許可する
+- PR 内の作業コミットがそのまま `main` の履歴に残り、作業の経緯を後から追えるため
+- マージコミット「Merge pull request #番号」により、どの PR で取り込んだ変更か分かるため
+- マージ後に `git branch -d` でローカルブランチを安全に削除できるため
+
+PR 内のコミットは `main` の履歴に残るため、コミットメッセージは「7. コミット」に従い、何を変更したか分かる内容にします。
 
 ```mermaid
 flowchart TD
     A[作業ブランチ feature/12-add-gemini-links<br>PR #13]
     A --> A1[Geminiの公式リンクを追加]
-    A --> A2[リンクの表記を修正]
-    A --> A3[レビュー指摘を反映]
-    A1 --> B[人間がレビュー・承認し<br>Squash and merge]
-    A2 --> B
-    A3 --> B
+    A1 --> A2[リンクの表記を修正]
+    A2 --> A3[レビュー指摘を反映]
+    A3 --> B[人間がレビュー・承認し<br>Merge pull request]
     B --> C[main]
-    C --> D[Geminiの公式リンクを追加<br>#13]
+    C --> D[Merge pull request #13<br>＋ PR 内の3コミットが残る]
 ```
+
+GitHub のリポジトリ設定（Settings → General → Pull Requests）で「Allow merge commits」のみを有効にし、「Allow squash merging」「Allow rebase merging」を無効にすることを推奨します。
 
 ---
 
@@ -297,7 +299,9 @@ git pull origin main
 git branch -d feature/12-add-gemini-links
 ```
 
-Squash and merge では作業ブランチの元のコミットが `main` の履歴に残らないため、`git branch -d` が未マージと判定して失敗することがあります。その場合は PR がマージ済みで、変更が `main` に反映され、ローカルブランチに残すべき作業がないことを確認してから、`git branch -D feature/12-add-gemini-links` でローカルブランチを削除します。これらを確認できない場合は削除しません。
+Merge pull request でマージした場合、作業ブランチのコミットは `main` に含まれるため、`git branch -d` で削除できます。
+
+`git branch -d` が「not fully merged」で失敗した場合は、マージ後に追加したコミットなど `main` に未反映の作業が残っている可能性があります。削除せずに内容を確認してください。PR がマージ済みで、ローカルブランチに残すべき作業がないことを確認できた場合に限り、`git branch -D feature/12-add-gemini-links` で削除します。
 
 `git branch -D` は未マージの作業も強制的に削除するため、**必ず人間が実行します**。AI エージェントは `git branch -D` を実行せず、削除が必要な場合は人間に依頼します。
 
